@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .todo-card {
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .task-item .task-text {
+            margin-bottom: 10px;
+        }
+
+        .task-item .task-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .task-item .task-actions button {
+            margin-left: 10px;
+        }
+
+        .task-item .task-date-time {
+            font-size: 0.8em;
+            text-align: right;
+            color: #6c757d;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+
+        #editor-container {
+            height: 150px;
+            margin-bottom: 20px;
+        }
+
+        .completed-task {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="todo-card">
+                    <h2 class="text-center mb-4">ToDo List</h2>
+
+                    <div id="editor-container"></div>
+                    <button class="btn btn-primary btn-block mb-3" onclick="addTask()">Add Task</button>
+
+                    <ul class="task-list" id="taskList">
+                        <!-- All tasks will be added dynamically here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        // Initialize Quill
+        var quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Type your task here...',
+        });
+
+        function addTask() {
+            var taskText = quill.root.innerHTML.trim();
+            if (taskText !== '') {
+                // Create task item
+                var taskItem = document.createElement('li');
+                taskItem.classList.add('task-item');
+
+                // Create task text
+                var taskTextDiv = document.createElement('div');
+                taskTextDiv.classList.add('task-text');
+                taskTextDiv.innerHTML = taskText;
+
+                // Create task actions (complete and remove buttons)
+                var taskActionsDiv = document.createElement('div');
+                taskActionsDiv.classList.add('task-actions');
+
+                var completeButton = document.createElement('button');
+                completeButton.classList.add('btn', 'btn-success', 'btn-sm');
+                completeButton.innerHTML = 'Complete';
+                completeButton.onclick = function() {
+                    taskTextDiv.classList.toggle('completed-task');
+                };
+
+                var removeButton = document.createElement('button');
+                removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
+                removeButton.innerHTML = 'Remove';
+                removeButton.onclick = function() {
+                    taskItem.remove();
+                };
+
+                // Create task date and time
+                var taskDateTimeDiv = document.createElement('div');
+                taskDateTimeDiv.classList.add('task-date-time');
+                taskDateTimeDiv.innerHTML = formatDateTime(new Date());
+
+                taskActionsDiv.appendChild(completeButton);
+                taskActionsDiv.appendChild(removeButton);
+
+                taskItem.appendChild(taskTextDiv);
+                taskItem.appendChild(taskActionsDiv);
+                taskItem.appendChild(taskDateTimeDiv);
+
+                // Append task item to the task list
+                document.getElementById('taskList').prepend(taskItem);
+
+                // Clear the editor content
+                quill.root.innerHTML = '';
+            }
+        }
+
+        function formatDateTime(date) {
+            return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+        }
+    </script>
+</body>
+</html>
